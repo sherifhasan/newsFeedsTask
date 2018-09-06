@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void setSelectedPane(Article article, int pos) {
+    public void setSelectedPane(Article article) {
         if (twoPanes) {
             NewsDetailsActivityFragment fragment = NewsDetailsActivityFragment.newInstance(article);
             getSupportFragmentManager().beginTransaction()

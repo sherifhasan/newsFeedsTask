@@ -21,8 +21,8 @@ import butterknife.ButterKnife;
 import example.android.newsfeeds.R;
 import example.android.newsfeeds.models.Article;
 import example.android.newsfeeds.presenter.NewsPresenter;
-import example.android.newsfeeds.ui.activities.NewsDetailsActivity;
 import example.android.newsfeeds.ui.adapters.NewsAdapter;
+import example.android.newsfeeds.utility.PanesHandler;
 
 
 public class MainActivityFragment extends Fragment {
@@ -37,6 +37,7 @@ public class MainActivityFragment extends Fragment {
     LinearLayout newsLayout;
     @BindView(R.id.news_list)
     RecyclerView recyclerView;
+    PanesHandler panesHandler;
 
     public MainActivityFragment() {
     }
@@ -57,7 +58,7 @@ public class MainActivityFragment extends Fragment {
         newsAdapter.setListener(new NewsAdapter.Listener() {
             @Override
             public void onClick(Article article) {
-                NewsDetailsActivity.startActivity(getActivity(), article);
+                ((PanesHandler) getActivity()).setSelectedPane(article);
             }
         });
 
