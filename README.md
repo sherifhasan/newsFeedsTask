@@ -1,5 +1,5 @@
 # News Feeds Application
- An application for retrieving  news from news api
+ An application for retrieving  news from news api working on mobile and tablet
 
 # Technologies
 Picasso : to handle the loading and caching of images. <br />
