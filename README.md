@@ -8,4 +8,5 @@ Butter Knife: to handle data bindings <br />
 Gson: for json parsing <br />
 Paper parcel : to handle parcelable implementation <br />
 Schematic : for local database   <br />
- 
+# Pattern
+ MVP architectural pattern used to built the application for the sake of simplicity
