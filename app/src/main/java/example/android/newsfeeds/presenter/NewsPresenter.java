@@ -44,7 +44,7 @@ public class NewsPresenter {
         if (isNetworkConnected(context)) {
             getNewsFeedsFromApi();
         } else {
-            getNewsFeedsFromDatabase(context);
+            getNewsFeedsFromDatabase();
         }
     }
 
@@ -61,6 +61,7 @@ public class NewsPresenter {
                     Log.d("Articles size: ", (response.body().getArticles().size() + toString()));
                     articleList = new ArrayList<>();
                     articleList.addAll(response.body().getArticles());
+                    insertArticles();
                     publish();
                 } else {
                     Log.d("Get Articles : ", "Response is null");
@@ -77,7 +78,7 @@ public class NewsPresenter {
     }
 
 
-    private void insertArticles(final Context context) {
+    private void insertArticles() {
         context.getContentResolver().delete(ArticlesProvider.Articles.articleUri, null, null);
         ContentValues[] cvs = new ContentValues[articleList.size()];
         for (int i = 0; i < articleList.size(); i++) {
@@ -107,7 +108,7 @@ public class NewsPresenter {
     }
 
 
-    private void getNewsFeedsFromDatabase(final Context context) {
+    private void getNewsFeedsFromDatabase() {
         Cursor cursor = context.getContentResolver().query(ArticlesProvider.Articles.articleUri,
                 null, null, null, null);
         List<Article> articles = new ArrayList<Article>();
@@ -127,6 +128,7 @@ public class NewsPresenter {
             cursor.close();
             articleList = new ArrayList<>();
             articleList.addAll(articles);
+            publish();
         }
     }
 
@@ -138,7 +140,6 @@ public class NewsPresenter {
     private void publish() {
         if (fragment != null) {
             if (articleList != null) {
-                insertArticles(context);
                 fragment.onArticleNext(articleList);
             } else if (error != null) {
                 fragment.onArticleError(error);
