@@ -73,8 +73,8 @@ public class MainActivityFragment extends Fragment {
         newsAdapter.updateAdapter(articleList);
     }
 
-    public void onArticleError(Throwable throwable) {
-        Snackbar.make(newsLayout, throwable.getMessage(), Snackbar.LENGTH_LONG).show();
+    public void onArticleError(String errorMessage) {
+        Snackbar.make(newsLayout, errorMessage, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

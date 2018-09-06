@@ -35,7 +35,7 @@ public class NewsPresenter {
 
 
     private List<Article> articleList;
-    private Throwable error;
+    private String error;
     private MainActivityFragment fragment;
     private Context context;
 
@@ -70,9 +70,8 @@ public class NewsPresenter {
 
             @Override
             public void onFailure(@NonNull Call<News> call, @NonNull Throwable t) {
-                Log.d("onFailure :", t.toString());
-                error = t;
-                publish();
+                Log.d("onFailure :", t.getMessage());
+                getNewsFeedsFromDatabase();
             }
         });
     }
@@ -128,6 +127,9 @@ public class NewsPresenter {
             cursor.close();
             articleList = new ArrayList<>();
             articleList.addAll(articles);
+            if (articleList.isEmpty()) {
+                error = "No local database nor internet connection";
+            }
             publish();
         }
     }
