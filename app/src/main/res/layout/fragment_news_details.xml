@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/more_little_space"
+        android:paddingEnd="@dimen/more_little_space"
+        android:paddingStart="@dimen/more_little_space"
+        android:paddingTop="@dimen/more_little_space">
+
+        <ImageView
+            android:id="@+id/details_image"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/half_screen_width"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/place_holder"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/details_published_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/details_image"
+            android:layout_marginBottom="4dp"
+            android:ellipsize="end"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:textColor="@android:color/white"
+            tools:text="Sep 4 , 2017" />
+
+
+        <LinearLayout
+            android:id="@+id/newsFeed_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/details_image"
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/details_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/some_space"
+                android:ellipsize="end"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                tools:text="Deadly train crash" />
+
+            <TextView
+                android:id="@+id/details_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/some_space"
+                android:layout_marginStart="@dimen/some_space"
+                android:ellipsize="end"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="15sp"
+                tools:text="By BBC.Com" />
+
+            <TextView
+                android:id="@+id/details_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/some_space"
+                android:layout_marginStart="@dimen/some_space"
+                android:ellipsize="end"
+                android:textAlignment="textStart"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="15sp"
+                tools:text="Hot on the heels of Nikon’s first full-frame mirrorless cameras" />
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/open_website"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/details_image"
+            android:layout_below="@id/newsFeed_section"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="32dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/open_website"
+            android:textColor="@android:color/white" />
+
+
+    </RelativeLayout>
+</ScrollView>
