@@ -23,6 +23,7 @@ import example.android.newsfeeds.models.Article;
 import example.android.newsfeeds.presenter.NewsPresenter;
 import example.android.newsfeeds.ui.adapters.NewsAdapter;
 import example.android.newsfeeds.utility.PanesHandler;
+import io.reactivex.disposables.CompositeDisposable;
 
 
 public class MainActivityFragment extends Fragment {
@@ -38,6 +39,7 @@ public class MainActivityFragment extends Fragment {
     @BindView(R.id.news_list)
     RecyclerView recyclerView;
     PanesHandler panesHandler;
+    CompositeDisposable disposable;
 
     public MainActivityFragment() {
     }
@@ -81,7 +83,8 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        newsPresenter = new NewsPresenter(getActivity());
+        disposable = new CompositeDisposable();
+        newsPresenter = new NewsPresenter(getActivity(), disposable);
         newsPresenter.onTakeView(this);
     }
 
@@ -89,8 +92,10 @@ public class MainActivityFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         newsPresenter.onTakeView(null);
-        if (getActivity() != null && !getActivity().isChangingConfigurations())
+        if (getActivity() != null && !getActivity().isChangingConfigurations()) {
             newsPresenter = null;
+            disposable.clear();
+        }
     }
 
     @Override

@@ -3,7 +3,6 @@ package example.android.newsfeeds.presenter;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -12,13 +11,14 @@ import java.util.List;
 import example.android.newsfeeds.database.ArticlesProvider;
 import example.android.newsfeeds.models.Article;
 import example.android.newsfeeds.models.News;
-import example.android.newsfeeds.network.retrofit.ApiClient;
-import example.android.newsfeeds.network.retrofit.ApiInterface;
+import example.android.newsfeeds.network.retrofit.RxClient;
+import example.android.newsfeeds.network.retrofit.RxInterface;
 import example.android.newsfeeds.ui.fragments.MainActivityFragment;
 import example.android.newsfeeds.utility.Utility;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static example.android.newsfeeds.database.ArticlesContract.ArticlesTableEntry.COLUMN_AUTHOR;
 import static example.android.newsfeeds.database.ArticlesContract.ArticlesTableEntry.COLUMN_DESCRIPTION;
@@ -33,49 +33,48 @@ import static example.android.newsfeeds.utility.Utility.toStringDate;
 
 public class NewsPresenter {
 
-
     private List<Article> articleList;
     private String error;
     private MainActivityFragment fragment;
     private Context context;
+    private CompositeDisposable disposable;
 
-    public NewsPresenter(Context context) {
+    public NewsPresenter(Context context, CompositeDisposable disposable) {
         this.context = context;
+        this.disposable = disposable;
         if (isNetworkConnected(context)) {
-            getNewsFeedsFromApi();
+            getNewsRX();
         } else {
             getNewsFeedsFromDatabase();
         }
     }
 
+    private void getNewsRX() {
+        RxInterface rxApi = RxClient.getClient();
+        final DisposableSingleObserver<News> subscription = rxApi.getNewsFeeds(Utility.SOURCE, Utility.API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<News>() {
+                    @Override
+                    public void onSuccess(News news) {
+                        if (news != null && news.getStatus().equals("ok")) {
+                            Log.d("Articles size: ", (news.getArticles().size() + toString()));
+                            articleList = new ArrayList<>();
+                            articleList.addAll(news.getArticles());
+                            insertArticles();
+                            publish();
+                        } else {
+                            Log.d("Get Articles : ", "Response is null");
+                        }
+                    }
 
-    private void getNewsFeedsFromApi() {
-
-        ApiInterface apiService = ApiClient.getClient();
-        Call<News> call = apiService.getNewsFeeds(Utility.SOURCE, Utility.API_KEY);
-        call.enqueue(new Callback<News>() {
-            @Override
-            public void onResponse(@NonNull Call<News> call, @NonNull Response<News> response) {
-
-                if (response.isSuccessful() && response.body() != null && response.body().getStatus().equals("ok")) {
-                    Log.d("Articles size: ", (response.body().getArticles().size() + toString()));
-                    articleList = new ArrayList<>();
-                    articleList.addAll(response.body().getArticles());
-                    insertArticles();
-                    publish();
-                } else {
-                    Log.d("Get Articles : ", "Response is null");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<News> call, @NonNull Throwable t) {
-                Log.d("onFailure :", t.getMessage());
-                getNewsFeedsFromDatabase();
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("onFailure :", e.getMessage());
+                    }
+                });
+        disposable.add(subscription);
     }
-
 
     private void insertArticles() {
         context.getContentResolver().delete(ArticlesProvider.Articles.articleUri, null, null);
@@ -106,10 +105,10 @@ public class NewsPresenter {
         Log.d("num of rows : ", String.valueOf(numOfRows));
     }
 
-
     private void getNewsFeedsFromDatabase() {
         Cursor cursor = context.getContentResolver().query(ArticlesProvider.Articles.articleUri,
                 null, null, null, null);
+
         List<Article> articles = new ArrayList<Article>();
         if (cursor != null) {
             if (cursor.moveToFirst()) {
